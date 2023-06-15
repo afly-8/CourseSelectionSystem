@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <base href="<%=bashPath%>">
+    <title>后台登录 | xxxx</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="xxxx" name="description">
+    <meta content="xxxx" name="keywords">
+    <meta content="xxxx" name="author">
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/custom.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+</head>
+<body data-sidebar="dark">
+
+<div class="login-page" id="app">
+    <div class="page-header">
+        <div class="wrapper clear">
+            <div class="logo fl">
+                <a href="/">
+                    <img src="img/logo2.png" alt="logo"></a>
+                <div class="page-he" style="color: #009966;">  </div></div>
+            <div class="page-header-info frr">
+                <a class="page-header-m iconfont" href="javascript:"><i class="bx bx-list-ul menu-icon"></i></a>
+                <ul class="page-header-c">
+                    <li>
+                        <a href="/">首页</a></li>
+                    <li>
+                        <a href="" target="_blank">关于</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="page-content">
+        <div class="wrapper">
+            <div class="login-wrap">
+                <div class="left">
+                    <div class="banner-main ">
+                        <div class="banner-main-img">
+                            <ul>
+                                <li style="display: block;">
+                                    <h2>微信选课系统</h2>
+                                    <div class="desc">
+                                        <div>+ “秦岭北麓、终南山下、沣河之畔”</div>
+                                        <div>+ “明德、亲民、至善”</div>
+                                        <div>+ “以学生为根、以育人为本、以教师为要、以责任为重”</div>
+                                        <img style="width: 500px; height: 180px;" src="img/logo2.png"  alt="微信选课系统"/>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="login-item">
+                        <div class="login" data-type="account">
+                            <div class="login-tab">
+                                <ul class=" nav" role="tablist">
+                                    <li class="">
+                                        <a class=" active" data-toggle="tab" role="tab" aria-selected="false">管理员登录</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="login-content">
+                                <div class="tab-content">
+                                    <div id="phone" class="tab-pane login-form  active" role="tabpanel">
+                                    <ul>
+                                        <li>
+                                            <!-- 登陆输入框  -->
+                                            <input style="margin-bottom: 10px;" type="text" class="input-skin_phone" v-model="loginForm.username" name="user" value="" placeholder="请输入账号">
+                                        </li>
+                                        <li >
+                                            <!-- 密码输入框 -->
+                                            <input type="password" class="input-skin" v-model="loginForm.password" name="password" placeholder="请输入密码"></li>
+                                        <li style="margin-bottom: 20px;">
+                                            <!-- 验证码输入框 -->
+                                            <input style="margin-top: -15px; width: 150px; float: left;" type="text" class="input-skin input-val" v-model="code" name="check" placeholder="请输入验证码"></li>
+                                        <div style="float: right;" class="label-text">
+                                            <!-- <button type="button" style="width: 150px; height: 42px; margin-top: -15px; border: 0;" class="">
+                                                <canvas ref="canvasRef" id="canvas"  width="120" height="42"></canvas>
+                                            </button> -->
+                                            <canvas ref="canvasRef" style="width: 150px; height: 42px; margin-top: -15px; border: 0;"  class="verify" :width="width" :height="height" @click="drawCode"></canvas>
+                                        </div>
+                                        <li>
+                                            <button class="btn btn-lg" @click="login()" style="margin-top: 70px;">登录</button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div></div>
+        </div>
+    </div>
+</div>
+<div class="page-footer">
+    <div class="wrapper">
+        <p class="wrapper-a">Copyright © 2007-2021 [微信选课系统] 陕西省西安市      <a target="_blank" href="https://beian.miit.gov.cn">
+            <img src="img/ga.png" alt="陕ICP备00000000号-2"/> 网站备案号：陕ICP备00000000号</a></p>
+    </div>
+</div>
+</body>
+
+
+<!-- 引入组件库 -->
+
+<!-- JAVASCRIPT -->
+<script src="js/jquery.min.js"></script>
+<!-- 自定义js -->
+<!-- <script src="js/code.js"></script> -->
+<script src="js/dream-msg.min.js"></script>
+
+<script src="js/vue.js"></script>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+
+<script src="js/axios-0.18.0.js"></script>
+<script type="text/javascript" src="js/cookie_utils.js" ></script>
+<script>
+var vm = new Vue({
+    el: "#app",
+    props: {
+        // 加减计算最小值
+        min: {
+            type: Number,
+            default: 1
+        },
+        // 加减计算最大值
+        max: {
+            type: Number,
+            default: 10
+        },
+        // 验证码图片的宽高
+        width: {
+            type: Number,
+            default: 120
+        },
+        height: {
+            type: Number,
+            default: 42
+        },
+        // 验证码的类型
+        verifyType: {
+            type: String,
+            default: 'cal',
+            validator: (val) => {
+                // default数字和小写字母混合
+                // cal   两个数加减
+                return ['default','cal'].includes(val);
+            }
+        },
+        // 字母字符串的长度
+        strLength: {
+            type: Number,
+            default: 5
+        },
+        // 背景色
+        bg: {
+            type: String,
+            default: '#ffffff'
+        }
+    },
+    data() {
+        return {
+            // 操作符号  只计算加减
+            loginForm:{
+                username:"",
+                password:"",
+            },
+            code: "",
+            operator: [1,-1],
+            // code集合
+            codeList: [0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'],
+            // 结果
+            result: undefined,
+        };
+    },
+    mounted() {
+        this.drawCode();
+        // this.adjustWindow(this.$refs.canvasRef);
+    },
+    methods: {
+        // 列表
+        login: function () {
+            var code = this.code * 1;
+            if (!this.result || this.result * 1 !== code) {
+                Dreamer.error("验证码错误！请重新输入！", 1000);
+                this.drawCode();
+            } else {
+                axios.post("/user/login", this.loginForm).then((res) => {
+                    if (res.data.code === 10000) {
+                        // localStorage.setItem("user", JSON.stringify(res.data));
+                        window.sessionStorage.setItem("token", res.data.msg)
+                        window.sessionStorage.setItem("role", res.data.data.username)
+                        Dreamer.success("登陆成功", 1000);
+                        window.location.href = "pages/main.html";
+                    } else {
+                        Dreamer.error(res.data.msg, 1000);
+                        this.drawCode();
+                    }
+                })
+            }
+        },
+
+            // 绘制验证码
+        drawCode() {
+            // 获取对象
+            let canvas = this.$refs.canvasRef;
+            // 创建画布环境
+            let context = canvas.getContext('2d');
+            context.clearRect(0,0,this.width,this.height);
+            // 绘制背景
+            context.fillStyle = this.bg;
+            // 清空画布
+            context.fillRect(0,0,this.width,this.height);
+            // 绘制80个点
+            for(let i = 0;i < 80;i++) {
+                this.drawPoint(context);
+            }
+            // 绘制内容
+            context.strokeStyle = this.randColor();
+            // 文字大小为高的一半，并随即加减-5~10
+            let fontSize = parseInt(this.height / 2) + this.randomNum(-5,10);
+            // 字体
+            context.font = `${fontSize}px 楷体`;
+            // 文字内容
+            let textContents = this.createContent();
+            // 计算文字偏移量
+            let textX = parseInt((this.width - context.measureText(textContents).width) / 2) ;
+
+            // 设置文字旋转
+            let angle = this.randomNum(-8,8);
+            context.rotate(Math.PI / 180 * -angle);
+            context.strokeText(textContents, textX, parseInt(this.height / 1.5));
+            context.rotate(Math.PI / 180 * angle);
+
+            // 向父组件返回结果
+            this.$emit('getResult',this.result);
+        },
+        // 绘制点
+        drawPoint(context) {
+            // 获取点的随机颜色
+            context.fillStyle = this.randColor();
+            context.beginPath();
+            // 生成随机圆心
+            let x = this.randomNum(0,this.width);
+            let y = this.randomNum(0,this.height);
+            // 生成随机半径
+            let r = Math.random();
+            // 生成圆环
+            context.arc(x,y,r,0,Math.PI * 2,true);
+            context.closePath();
+            // 填充圆
+            context.fill();
+        },
+        // 生成绘制内容
+        createContent() {
+            let str = '';
+            // 判断类型
+            if(this.verifyType === 'default') {
+                // 绘制文字和数字的组合
+                for(let i = 0;i < this.strLength;i++) {
+                    let i = this.randomNum(0,35);
+                    str += this.codeList[i] + ' ';
+                }
+                this.result = str;
+            }else{
+                // 加减
+                let num1 = this.randomNum(this.min,this.max);
+                let num2 = this.randomNum(this.min,this.max);
+                let op = this.operator[this.randomNum(0,1)];
+                // 计算结果
+                this.result = num1 + op * num2;
+                str = num1 + (op > 0 ? ' + ' : ' - ') + num2 + ' = ?';
+            }
+            //
+            return str;
+        },
+        // 生成从minNum到maxNum的随机数
+        randomNum(minNum,maxNum) {
+            switch(arguments.length) {
+                case 1:
+                    return parseInt(Math.random() * minNum + 1,10);
+                case 2:
+                    return parseInt(Math.random() * (maxNum - minNum + 1) + minNum,10);
+                default:
+                    return 0;
+            }
+        },
+        // 生成随机颜色
+        randColor() {
+            let r = this.randomNum(255);
+            let g = this.randomNum(255);
+            let b = this.randomNum(255);
+            return `rgb(${r},${g},${b})`;
+        },
+        }
+    })
+</script>
+</html>

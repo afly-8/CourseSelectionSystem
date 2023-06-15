@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.course.system.mapper.ScourseMapper">
+
+    <resultMap id="BaseResultMap" type="cn.course.system.domain.Scourse">
+            <id property="cid" column="cid" jdbcType="VARCHAR"/>
+            <result property="sid" column="sid" jdbcType="VARCHAR"/>
+            <result property="tid" column="tid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        cid,sid,tid
+    </sql>
+    <select id="getCount" resultType="cn.course.system.domain.Scourse">
+        SELECT scourse.cid, COUNT(scourse.cid)  as num FROM scourse GROUP BY scourse.cid;
+    </select>
+
+    <select id="findByPage" resultType="cn.course.system.common.vo.ScourseVO">
+        SELECT s.name AS sname, c.`name` AS cname, c.time, c.place, c.type, t.`name` AS tname, sc.scid, sc.cid, sc.sid
+        FROM scourse sc
+        JOIN course c ON c.cid = sc.cid
+        left JOIN student s ON s.sid = sc.sid
+        left JOIN teacher t ON t.cid = sc.cid
+        where t.cid = sc.cid
+        <if test="queryStr != null and queryStr.length > 0">
+            and s.name like concat('%', #{queryStr}, '%')
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3307/course_selection?characterEncoding=utf8&serverTimezone=UTC
+      username: course_selection
+      password: xl942653
+
+server:
+  port: 80
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true # 虽然默认为 true ，但是还是显示去指定下。
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    global-config:
+      db-config:
+        id-type: AUTO
+        logic-delete-value: "Y" # 逻辑已删除值(默认为 Y)
+        logic-not-delete-value: "N" #逻辑未删除值(默认为 N)
+
+

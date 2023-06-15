@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.course.system.mapper.NewsMapper">
+
+    <resultMap id="BaseResultMap" type="cn.course.system.domain.News">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="releaseTime" column="release_time" jdbcType="TIMESTAMP"/>
+            <result property="sign" column="sign" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,title,release_time,
+        sign
+    </sql>
+
+    <select id="findByPage" resultType="cn.course.system.domain.News" parameterType="string">
+        select
+        <include refid="Base_Column_List"/>
+        from news
+        <if test="queryStr != null and queryStr.length > 0">
+            where title like concat('%', #{queryStr}, '%')  or sign = #{queryStr}
+        </if>
+    </select>
+</mapper>

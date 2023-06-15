@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.course.system.mapper.CourseMapper">
+
+    <resultMap id="BaseResultMap" type="cn.course.system.domain.Course">
+            <id property="cid" column="cid" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="time" column="time" jdbcType="VARCHAR"/>
+            <result property="place" column="place" jdbcType="VARCHAR"/>
+            <result property="sum" column="sum" jdbcType="INTEGER"/>
+            <result property="type" column="type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        course.cid, course.name, course.time,
+        course.place, course.sum, course.type
+    </sql>
+
+    <select id="findByPage" resultType="cn.course.system.domain.Course" parameterType="string">
+        select
+        <include refid="Base_Column_List"/>, teacher.name as tname
+        from course, teacher
+        where course.cid=teacher.cid
+        <if test="queryStr != null and queryStr.length > 0">
+            and course.name like concat('%', #{queryStr}, '%')
+        </if>
+    </select>
+
+    <select id="getCourse" resultType="cn.course.system.domain.Course">
+        SELECT c.cid, c.name, c.time, c.place, c.sum, c.type, MAX(t.name) as tname, COUNT(sc.cid) as num
+        FROM course c
+        JOIN teacher t ON c.cid = t.cid
+        LEFT JOIN scourse sc ON c.cid = sc.cid
+        where c.cid=t.cid
+        <if test="queryStr != null and queryStr.length > 0">
+            and c.name like concat('%', #{queryStr}, '%')
+        </if>
+        GROUP BY c.cid
+    </select>
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.course.system.mapper.TeacherMapper">
+
+    <resultMap id="BaseResultMap" type="cn.course.system.domain.Teacher">
+            <id property="tid" column="tid" jdbcType="VARCHAR"/>
+            <result property="cid" column="cid" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        DISTINCT id,tid, cid,name,phone
+    </sql>
+    <select id="findByPage" resultType="cn.course.system.domain.Teacher" parameterType="string">
+        select
+        <include refid="Base_Column_List"/>
+        from teacher
+        <if test="queryStr != null and queryStr.length > 0">
+            where name = #{queryStr} or phone = #{queryStr}
+        </if>
+    </select>
+
+    <insert id="saveById"></insert>
+</mapper>
